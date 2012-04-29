@@ -1,0 +1,12 @@
+++++++++++++++++
+Loggly.com Notes
+++++++++++++++++
+
+I set up rsyslog to forward my logs there.
+
+That has a side effect -- EVERYTHING in syslog goes there.
+
+Their web interface is very jazzy, but not that useful.
+
+
+.. vim: set syntax=rst expandtab shiftwidith=4 expandtab :

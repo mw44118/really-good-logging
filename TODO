@@ -1,0 +1,11 @@
+Write code to represent a project with these parts:
+
+*   web process
+*   daily cron job
+*   a bunch of long-lived background processes that consume data from a queue
+
+Log these kinds of things:
+
+*   noisy debug stuff
+*   some unexpected exceptions
+*   INFO-level stuff
