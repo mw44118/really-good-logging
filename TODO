@@ -7,5 +7,34 @@ Write code to represent a project with these parts:
 Log these kinds of things:
 
 *   noisy debug stuff
-*   some unexpected exceptions
 *   INFO-level stuff
+*   404 errors
+*   500 errors
+
+Use different log levels to dispatch to different handlers.  Send
+critical errors to email, debugs to stderr, info to text files.
+
+Use different filters so that 404 errors go one place and 500 errors go
+somewhere else.
+
+Use logrotate to archive logs.
+
+Use logstash to send log files offsite.
+
+
+Configure syslog on one box to send logs to a different box.
+
+Use logstash to send logs to graylog
+
+Use logstash to transform logs
+
+
+
+Use logstash's web interface to view logs
+
+Use graylog's web interface.
+
+Use loggly.com's web interface
+
+Use papertrailapp.com's web interface
+
