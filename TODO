@@ -1,40 +1,86 @@
 Write code to represent a project with these parts:
 
-*   web process
-*   daily cron job
-*   a bunch of long-lived background processes that consume data from a queue
+The very, very beginning
+========================
 
-Log these kinds of things:
+We'll write a trivial command-line python script that does these things:
 
-*   noisy debug stuff
-*   INFO-level stuff
-*   404 errors
-*   500 errors
+*   parse command-line options and arguments
+
+*   log the parsed command-line options and arguments
+
+*   make some network call to some place like facebook, reddit, or
+    twitter
+
+*   log some details from the raw HTTP request and response
+
+*   parse the returned data
+
+*   log whether parsing was successful
+
+*   write some data to STDOUT
+
+Set handlers and filters a logger with code
+===========================================
+
+Use a logging config file to configure logging
+==============================================
+
+Web application logging
+=======================
+
+This is what I want in my logs
+
+=============================== =======================================
+Event                           How to handle
+=============================== =======================================
+Every stinking web request      Track it with a DEBUG level
+
+Failed authentication attempt   Track this with INFO level
+
+404 responses                   Accumulate all the for the data and
+                                notify the team daily
+
+500 responses                   Store the traceback and notify the team
+                                immediately
+
+=============================== =======================================
+
+Fun with handlers
+=================
 
 Use different log levels to dispatch to different handlers.  Send
 critical errors to email, debugs to stderr, info to text files.
 
+Fun with filters
+================
+
 Use different filters so that 404 errors go one place and 500 errors go
 somewhere else.
 
-Use logrotate to archive logs.
+Rotating, archiving, and shipping logs
+====================================
 
-Use logstash to send log files offsite.
+*   Use logrotate to archive logs.
+
+*   Use logstash to send log files offsite.
+
+*   Configure syslog on one box to send logs to a different box.
+
+*   Use logstash to send logs to graylog
 
 
-Configure syslog on one box to send logs to a different box.
+Viewing and aggregating and analyzing
+=====================================
 
-Use logstash to send logs to graylog
+*   Use logstash to transform logs
 
-Use logstash to transform logs
+*   Use logstash's web interface to view logs
 
+*   Use graylog's web interface.
 
+*   Use loggly.com's web interface
 
-Use logstash's web interface to view logs
+*   Use papertrailapp.com's web interface
 
-Use graylog's web interface.
-
-Use loggly.com's web interface
-
-Use papertrailapp.com's web interface
-
+.. vim: set syntax=rst :
