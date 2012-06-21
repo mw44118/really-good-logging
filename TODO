@@ -20,8 +20,32 @@ We'll write a trivial command-line python script that does these things:
 
 *   write some data to STDOUT
 
-Set handlers and filters a logger with code
-===========================================
+
+
+Log uncaught exceptions by setting sys.excepthook
+=================================================
+
+On the trivial.py script, add a command-line option --kaboom, that
+causes the script to crash due to an uncaught exception.
+
+Point out how the log files do not see the output of the uncaught
+exception.
+
+Describe how to use a try: except: "diaper" around all the code to log
+it.
+
+Talk about why that sucks:
+
+*   easy to accidentally nest within another try/except.
+
+*   easy to forget to re-raise exception, so script may return a
+    misleading error code.
+
+Next show how to use sys.excepthook, like this:
+https://gist.github.com/2960239
+
+Configure logging with code
+===========================
 
 Use a logging config file to configure logging
 ==============================================
@@ -58,8 +82,31 @@ Fun with filters
 Use different filters so that 404 errors go one place and 500 errors go
 somewhere else.
 
+*   In the filter, use text analysis on log messages, like::
+
+        if "404" in message:
+            return True
+
+    This is ugly because 404 might be a part of some unrelated log
+    message, like a user ID.
+
+
+*   Use type-checking on the log objects in the filter, like::
+
+        if isinstance(log, My404Exception):
+            return True
+
+    Much better!  Now I just need to log stuff like this::
+
+        try:
+            handle(req)
+        except Exception as ex:
+            log.exception(ex)
+
 Rotating, archiving, and shipping logs
-====================================
+======================================
+
+Some popular solutions:
 
 *   Use logrotate to archive logs.
 
