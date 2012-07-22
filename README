@@ -49,7 +49,10 @@ I aim to talk about how to:
     *   fun-with-syslog.txt
     *   in-process-vs-background.txt
 
-*   handle security and privacy issues with logging
+*   security and privacy issues with logging
+
+    *   privacy-and-security-issues.txt
+
 
 *   rotate and archive old logs automatically.
 

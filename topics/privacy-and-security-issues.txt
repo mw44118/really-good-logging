@@ -1,0 +1,42 @@
+Privacy and Security Issues
+===========================
+
+Be aware of what is in your logs
+--------------------------------
+
+Pretend you run a website that sells subscriptions, and you always log
+the body of all HTTP POST requests.
+
+Now your logs may be full of credit card numbers (if you are lucky
+enough to have customers).
+
+
+Be aware of where you send your logs
+------------------------------------
+
+Pretend that when your website crashes, you send an email to your
+development team with the traceback.
+
+Now you need to make sure that those emails don't get forwarded to the
+wrong people!
+
+This is exactly how the rebels in Star Wars got the plans to the death
+star, both times.  The same storm trooper forgot to sign out of his
+email at an internet cafe.
+
+
+
+Figure out your risk tolerance
+------------------------------
+
+There is no one-size-fits-all solution here.
+
+The logging policy that works well for a big hospital's electronic
+medical records application should look different than the logging
+policy used at some pre-money startup just building an app they plan to give
+away for free.
+
+You need to weigh security concerns vs the customer experience, time to
+market, and infrastructure costs.
+
+.. vim: set syntax=rst:

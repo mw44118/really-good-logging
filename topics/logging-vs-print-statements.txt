@@ -1,0 +1,29 @@
+Logging vs Print Statements
+===========================
+
+
+What people expect from logging
+-------------------------------
+
+from http://www.quora.com/Why-do-logging-systems-become-so-complex::
+
+    Logging systems are used to handle a number of slightly different use
+    cases. The different uses of logging systems include:
+    - Debugging logic errors during development
+    - Debugging performance errors during development
+    - Recording exceptional situations in production
+    - Gathering performance metrics (how long did x take?)
+    - Gathering application level statistics (how many x’s occurred?)
+    - Postmortems and forensic analysis (What was happening before we
+      crashed?)
+    - Generating traces from user events in production (how are people using
+      x?)
+    - Getting events from many places to a single archival system
+      (aggregation)
+    - Send messages to other end points (I’m looking at you log4j/smtp
+        appender)
+    - Provide human and machine readable visibility into a system (app x
+        has finished launching!)
+
+
+.. vim: set syntax=rst:
