@@ -120,6 +120,9 @@ Some popular solutions:
 Viewing and aggregating and analyzing
 =====================================
 
+*   Log to a central mongodb server:
+    https://github.com/andreisavu/mongodb-log
+
 *   Use logstash to transform logs
 
 *   Use logstash's web interface to view logs
