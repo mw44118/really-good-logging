@@ -1,0 +1,63 @@
+Shipping Logs in process versus in background
+=============================================
+
+Scenario
+--------
+
+You have a box named that runs a process.  You want to get the logs from
+that box to your central logging box.
+
+You have two options:
+
+*   `Ship logs in process`
+*   `Use a different process to ship logs in background`
+
+Ship logs in process
+--------------------
+
+You can configure logging so the python process sends logs to the
+central box.
+
+You just need to add any handler that does this for you.  Here's some of
+the options in the standard library:
+
+*   logging.handlers.SysLogHandler
+*   logging.handlers.DatagramHandler (UDP)
+*   logging.handlers.SocketHandler (TCP)
+*   logging.handlers.HTTPHandler (do GETs or POSTs to some webserver)
+
+Other alternatives:
+
+*   send logs to mongo
+*   send to elastic search
+*   send to postgresql
+*   graylog2
+*   logstash
+
+Third party services:
+
+*   loggly.com
+*   papertrailapp.com
+
+Risks:
+
+*   If the remote service becomes slow or unavailable, your process may
+    become slow or crash.
+
+
+Use a different process to ship logs in background
+--------------------------------------------------
+
+Or you can Send logs to the local filesystem or to some other local
+process.  Then that other local process.
+
+This choice avoids the risk above, but has these risks instead:
+
+*   Now you need to configure and monitor your central process and
+    the log-shipping process.
+
+*   Logs may not arrive at your central logging system as quickly.
+
+
+
+.. vim: set syntax=rst:
