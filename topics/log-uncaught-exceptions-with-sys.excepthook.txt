@@ -1,0 +1,44 @@
+Log uncaught exceptions by setting sys.excepthook
+=================================================
+
+Uncaught exceptions will not be logged
+--------------------------------------
+
+This is a script that is going to blow up::
+
+    $ cat kaboom1.py
+
+    $ python kaboom1.py
+
+The traceback does not show up in the output logs!
+
+::
+
+    $ cat /tmp/kaboom1.log
+
+
+You could wrap your code with big try / except
+----------------------------------------------
+
+I don't like this:
+
+*   easy to accidentally nest within another try/except.
+
+*   easy to forget to re-raise exception, so the script may return a
+    misleading error code
+
+You should use sys.excepthook
+-----------------------------
+
+The kaboom2.py script does it right::
+
+    $ cat kaboom2.py
+
+
+
+
+Next show how to use sys.excepthook, like this:
+https://gist.github.com/2960239
+
+
+.. vim: set syntax=rst :

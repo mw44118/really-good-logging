@@ -22,28 +22,6 @@ We'll write a trivial command-line python script that does these things:
 
 
 
-Log uncaught exceptions by setting sys.excepthook
-=================================================
-
-On the trivial.py script, add a command-line option --kaboom, that
-causes the script to crash due to an uncaught exception.
-
-Point out how the log files do not see the output of the uncaught
-exception.
-
-Describe how to use a try: except: "diaper" around all the code to log
-it.
-
-Talk about why that sucks:
-
-*   easy to accidentally nest within another try/except.
-
-*   easy to forget to re-raise exception, so script may return a
-    misleading error code.
-
-Next show how to use sys.excepthook, like this:
-https://gist.github.com/2960239
-
 Configure logging with code
 ===========================
 
