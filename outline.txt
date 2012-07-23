@@ -13,10 +13,10 @@ Getting started
 A little bit fancier
 ====================
 
+*   log-uncaught-exceptions-with-sys.excepthook.txt
 *   multiple-logging-channels.txt
 *   example-log-filters.txt
 *   how-to-log-exceptions.txt
-*   log-uncaught-exceptions-with-sys.excepthook.txt
 
 Managing logs
 =============
@@ -25,9 +25,10 @@ Managing logs
 *   fun-with-syslog.txt
 *   in-process-vs-background.txt
 
-Log analysis
-============
+Collect your logs
+=================
 
+*   mongodb.txt
 *   logstash.txt
 *   graylog.txt
 *   loggly.com.txt
