@@ -1,0 +1,28 @@
+Fun with filters
+================
+
+Use different filters so that 404 errors go one place and 500 errors go
+somewhere else.
+
+*   In the filter, use text analysis on log messages, like::
+
+        if "404" in message:
+            return True
+
+    This is ugly because 404 might be a part of some unrelated log
+    message, like a user ID.
+
+
+*   Use type-checking on the log objects in the filter, like::
+
+        if isinstance(log, My404Exception):
+            return True
+
+    Much better!  Now I just need to log stuff like this::
+
+        try:
+            handle(req)
+        except Exception as ex:
+            log.exception(ex)
+
+.. vim: set syntax=rst :

@@ -5,7 +5,7 @@ Really Good Logging
 Getting started
 ===============
 
-*   use-basic-logging.txt
+*   topics/use-basic-logging.txt
 *   dispatch-by-log-level.txt
 *   configure-logging-with-config-file.txt
 *   configure-logging-with-dictionary.txt
