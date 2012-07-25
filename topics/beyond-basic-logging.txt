@@ -1,0 +1,14 @@
+Beyond basic logging
+====================
+
+*   Send critical errors by email
+*   Write everything with level INFO or greater to /var/log/rgl.log
+*   Send everything of DEBUG or greater to stderr
+
+*   Every log message should mention:
+    *   process ID
+    *   line number
+    *   file
+
+
+.. vim: set syntax=rst:

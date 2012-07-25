@@ -7,7 +7,9 @@ Getting started
 
 *   topics/basic-logging.txt
 *   topics/basic-handlers.txt
+
 *   topics/beyond-basic-logging.txt
+
 *   configure-logging-with-config-file.txt
 *   configure-logging-with-dictionary.txt
 
@@ -38,7 +40,8 @@ Collect your logs
 Last points
 ===========
 
-*   logging-vs-print-statements.txt
-*   privacy-and-security-issues.txt
+*   topics/privacy-and-security-issues.txt
+
+
 
 .. vim: set syntax=rst:
