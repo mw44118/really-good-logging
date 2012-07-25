@@ -1,0 +1,38 @@
+Basic Handlers
+==============
+
+Handlers take a log message and put it somewhere.  The default logging
+handler you get with logging.basicConfig is the StreamHandler, which
+sends stuff to stderr.
+
+You can use the filename argument to send logs to a file instead::
+
+    logging.basicConfig(level=logging.DEBUG, filename='/tmp/out.log'))
+
+Here's an example::
+
+    $ python code/fun_with_handlers.py
+
+    $ cat /tmp/out.log
+    INFO:root:All done!
+
+That log file is opened with append mode by default, so if you run the
+script many times, your logs will just accumulate::
+
+    $ python code/fun_with_handlers.py
+    $ python code/fun_with_handlers.py
+    $ python code/fun_with_handlers.py
+
+    $ cat /tmp/out.log
+    INFO:root:All done!
+    INFO:root:All done!
+    INFO:root:All done!
+    INFO:root:All done!
+
+Later we'll talk about what to add to the log message so we can
+distinguish the different scripts.
+
+And we'll talk about how to rotate logs.
+
+.. vim: set filetype=rst:
+
