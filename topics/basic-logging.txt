@@ -30,8 +30,12 @@ Here's all you have to do::
     logging.basicConfig(level=logging.DEBUG)
     logging.debug('blargh')
 
+Behind the scenes:
 
+*   make a stream a stream handler to send messages to stderr
 
+*   python formats messages like this::
+        level:name:message
 
 .. vim: set filetype=rst:
 

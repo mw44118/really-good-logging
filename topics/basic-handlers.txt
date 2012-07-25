@@ -1,7 +1,9 @@
 Basic Handlers
 ==============
 
-Handlers take a log message and put it somewhere.  The default logging
+Handlers take a log message and put it somewhere.
+
+The default logging
 handler you get with logging.basicConfig is the StreamHandler, which
 sends stuff to stderr.
 
@@ -29,10 +31,12 @@ script many times, your logs will just accumulate::
     INFO:root:All done!
     INFO:root:All done!
 
+You can set the mode to 'w' instead, and then each time you run your
+program, you will overwrite the logs from the last run.
+
 Later we'll talk about what to add to the log message so we can
 distinguish the different scripts.
 
 And we'll talk about how to rotate logs.
 
 .. vim: set filetype=rst:
-

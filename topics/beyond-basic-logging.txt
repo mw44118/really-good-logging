@@ -1,14 +1,23 @@
 Beyond basic logging
 ====================
 
-*   Send critical errors by email
-*   Write everything with level INFO or greater to /var/log/rgl.log
-*   Send everything of DEBUG or greater to stderr
+My typical logging setup:
 
-*   Every log message should mention:
+*   Write everything of DEBUG or greater to stderr and /tmp/rgl.log
+
+*   Write everything with level INFO or greater to /var/log/rgl.log
+
+*   Email critical log messages
+
+*   Every log message has:
+
+    *   date and time
+    *   log level
     *   process ID
-    *   line number
-    *   file
+    *   line number of the log statement
+    *   file name containing the log statement
+
+WHERE ARE YOUR PRINT STATEMENTS NOW?
 
 
 .. vim: set syntax=rst:
