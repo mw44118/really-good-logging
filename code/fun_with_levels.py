@@ -8,7 +8,6 @@ Show how you can use the logging level to hide lower-priority messages.
 
 import argparse
 import logging
-import sys
 
 def process_arguments():
 

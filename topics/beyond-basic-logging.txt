@@ -1,13 +1,13 @@
 Beyond basic logging
 ====================
 
-My typical logging setup:
+Here's a nice logging setup:
 
-*   Write everything of DEBUG or greater to stderr and /tmp/rgl.log
+*   Write everything of DEBUG or greater to stderr and /tmp/rgl.log.
 
-*   Write everything with level INFO or greater to /var/log/rgl.log
+*   Write everything with level INFO or greater to /var/log/rgl/rgl.log.
 
-*   Email critical log messages
+*   Email critical log messages.
 
 *   Every log message has:
 
@@ -19,5 +19,27 @@ My typical logging setup:
 
 WHERE ARE YOUR PRINT STATEMENTS NOW?
 
+This program shows how to set this up::
+
+    $ python code/beyond_basic_logging.py
+
+Here's the results::
+
+    $ cat /tmp/rgl.log
+    2012-07-25 22:17:38,981 DEBUG      10515  beyond_basic_logging.py  78 This is a boring debug message.
+    2012-07-25 22:17:38,982 INFO       10515  beyond_basic_logging.py  79 Here is an info message...
+    2012-07-25 22:17:38,982 WARNING    10515  beyond_basic_logging.py  80 This is a warning message!
+    2012-07-25 22:17:38,982 ERROR      10515  beyond_basic_logging.py  81 Even worse, This is an error message!
+    2012-07-25 22:17:38,983 CRITICAL   10515  beyond_basic_logging.py  82 OH NO THIS IS CRITICAL
+    2012-07-25 22:17:39,409 INFO       10515  beyond_basic_logging.py  84 All done!
+
+    $ cat /var/log/rgl/rgl.log
+    2012-07-25 22:17:38,982 INFO       10515  beyond_basic_logging.py  79 Here is an info message...
+    2012-07-25 22:17:38,982 WARNING    10515  beyond_basic_logging.py  80 This is a warning message!
+    2012-07-25 22:17:38,982 ERROR      10515  beyond_basic_logging.py  81 Even worse, This is an error message!
+    2012-07-25 22:17:38,983 CRITICAL   10515  beyond_basic_logging.py  82 OH NO THIS IS CRITICAL
+    2012-07-25 22:17:39,409 INFO       10515  beyond_basic_logging.py  84 All done!
+
+And I got the OH NO THIS IS CRITICAL message in my email also...
 
 .. vim: set syntax=rst:
