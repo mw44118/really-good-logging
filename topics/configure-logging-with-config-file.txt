@@ -1,0 +1,70 @@
+Use a config file to set up logging
+===================================
+
+There are three ways that I know of to set up logging:
+
+*   code (that's what I showed in code/beyond_basic_logging.py)
+*   config file
+*   dictionary
+
+This program works just like code/beyond_basic_logging.py, but uses a
+config file rather than a bunch of code::
+
+    $ python rgl/code/logging_config_example.py
+
+Loading a config file is stupid simple::
+
+    import logging.config
+    logging.config.fileConfig(path_to_config_file)
+
+The logging config syntax is boring old ini-style.  Here's how to set up
+the SMTPHandler
+
+
+Sidebar on pkg_resources
+------------------------
+
+Forget about logging for a second.  Any program that uses config files
+has to figure out where to put these files.
+
+When you're developing, it isn't a problem to just explicitly hard-code
+the path to the config file in your program.  You probably run your
+program out of your source-control checkout.
+
+But when you release this code and this config fiile as a package for
+other people to install and use, you won't know how and where the code
+is installed.
+
+These are popular solutions:
+
+*   Hard-code some path under /etc in your program and during the
+    install, copy the config file to that path.
+
+    *   This likely will require special permission.
+    *   What if many people people (or virtualenvs) share a box?
+    *   Uninstalling is not so easy now
+
+*   Require library users to tell you where to find the config file.
+
+    *   This is annoying to the end user.  When you import a python
+        module, you don't have to explicitly say where it lives; why
+        should you have to explicitly say where to find the config file
+        for the module?
+
+    *   With python eggs, this is not even possible, because eggs are
+        installed as zipped-up packages.
+
+Or you can use pkg_resources.
+
+It lets you store stuff like configuration files, text files, images,
+and lots of other stuff inside your code tree.
+
+And later, no matter where your code is installed, you can access these
+"resources".
+
+Of course, with this approach, the end user can not customize these
+configurations (just like they can't edit the code either) so if you
+mean for the end user to use the config file to alter how stuff works,
+then pkg_resources is not the right tool.
+
+.. vim: set syntax=rst:
