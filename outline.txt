@@ -11,12 +11,12 @@ Getting started
 *   topics/beyond-basic-logging.txt
 
 *   topics/configure-logging-with-config-file.txt
-*   configure-logging-with-dictionary.txt
+*   topics/configure-logging-with-dictionary.txt
 
 A little bit fancier
 ====================
 
-*   log-uncaught-exceptions-with-sys.excepthook.txt
+*   topics/log-uncaught-exceptions-with-sys.excepthook.txt
 *   multiple-logging-channels.txt
 *   example-log-filters.txt
 *   how-to-log-exceptions.txt

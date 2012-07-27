@@ -6,8 +6,6 @@ Uncaught exceptions will not be logged
 
 This is a script that is going to blow up::
 
-    $ cat kaboom1.py
-
     $ python kaboom1.py
 
 The traceback does not show up in the output logs!

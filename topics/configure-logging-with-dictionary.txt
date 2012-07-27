@@ -1,0 +1,19 @@
+Configure logging with a dictionary
+===================================
+
+You can also configure logging by passing a dictionary of values.
+
+There is a pretty clever trick possible with this approach: : now you
+can configure logging with any system that can be translated into a
+dictionary.
+
+Just write the code to translate those formats into this data structure,
+and you're good.
+
+I like YAML, so here's a YAML example::
+
+    python rgl/yaml_example.py
+
+As of python 2.7, this approach is the recommended approach.
+
+.. vim: set syntax=rst:

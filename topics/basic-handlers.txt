@@ -13,7 +13,7 @@ You can use the filename argument to send logs to a file instead::
 
 Here's an example::
 
-    $ python code/fun_with_handlers.py
+    $ python rgl/fun_with_handlers.py
 
     $ cat /tmp/out.log
     INFO:root:All done!
@@ -21,9 +21,9 @@ Here's an example::
 That log file is opened with append mode by default, so if you run the
 script many times, your logs will just accumulate::
 
-    $ python code/fun_with_handlers.py
-    $ python code/fun_with_handlers.py
-    $ python code/fun_with_handlers.py
+    $ python rgl/fun_with_handlers.py
+    $ python rgl/fun_with_handlers.py
+    $ python rgl/fun_with_handlers.py
 
     $ cat /tmp/out.log
     INFO:root:All done!

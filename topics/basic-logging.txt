@@ -4,12 +4,12 @@ Basic Logging
 This script sets the logging level based on the argument you pass in.
 Here's what you see when you set the log level to CRITICAL::
 
-    $ python code/fun_with_levels.py CRITICAL
+    $ python rgl/fun_with_levels.py CRITICAL
     CRITICAL:root:OH NO THIS IS CRITICAL
 
 And at the opposite extreme, you can set the logging level to DEBUG::
 
-    $ python code/fun_with_levels.py DEBUG
+    $ python rgl/fun_with_levels.py DEBUG
     DEBUG:root:This is a boring debug message.
     INFO:root:Here is an info message...
     WARNING:root:This is a warning message!
