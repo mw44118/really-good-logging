@@ -1,0 +1,8 @@
+Sentry
+======
+
+Just heard about this Friday morning, but it looks neat.
+
+How to configure a logging handler to send stuff to a sentry server
+
+*   http://raven.readthedocs.org/en/latest/config/logging.html

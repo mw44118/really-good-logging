@@ -26,7 +26,7 @@ Managing logs
 
 *   rotate-your-log-files.txt
 *   fun-with-syslog.txt
-*   in-process-vs-background.txt
+*   topics/in-process-vs-background.txt
 
 Collect your logs
 =================
@@ -36,6 +36,7 @@ Collect your logs
 *   graylog.txt
 *   loggly.com.txt
 *   papertrailapp.com.txt
+*   topics/sentry.txt
 
 Last points
 ===========
