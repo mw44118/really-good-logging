@@ -16,7 +16,7 @@ A little bit fancier
 ====================
 
 *   topics/multiple-logging-channels.txt
-*   example-log-filters.txt
+*   topics/example-log-filters.txt
 *   how-to-log-exceptions.txt
 
 Managing logs

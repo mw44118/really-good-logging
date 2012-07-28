@@ -1,28 +1,129 @@
 Fun with filters
 ================
 
-Use different filters so that 404 errors go one place and 500 errors go
-somewhere else.
+Pretend you have a web application and you want to log 404 responses and
+500 responses as errors.
 
-*   In the filter, use text analysis on log messages, like::
+And you want them to go to separate logging files.
 
-        if "404" in message:
-            return True
+And you don't want to create different loggers.
 
-    This is ugly because 404 might be a part of some unrelated log
-    message, like a user ID.
+You just want to be able to do something like this::
+
+    >>> import logging
+    >>> log = logging.getLogger('webapp')
+    >>> log.error('404 error: GET /fibityfoo')
+    >>> log.error('500 error: GET /kablooey')
+
+And then you want the 404 error to go to /var/log/rgl/404-errors.log,
+while the 500 error goes to /var/log/rgl/500-errors.log.
+
+In this case, you can set up two handlers (one for each file) and each
+handler has a filter that blocks all messages but the ones that look
+right for this filter.
+
+Check for certain substrings in the message
+-------------------------------------------
+
+We can filter by saying that any log message that starts with "404"
+should go to the Only404 handler::
+
+    >>> import logging
+
+    >>> class Only404(logging.Filter):
+    ...     def filter(self, logrec):
+    ...         return logrec.getMessage().startswith('404')
+
+Next make the handler and add it to the logger::
+
+    >>> h404 = logging.FileHandler('/var/log/rgl/404-errors.log')
+    >>> h404.setLevel(logging.DEBUG)
+    >>> log.addHandler(h404)
+
+Now add the filter to the handler::
+
+    >>> h404.addFilter(Only404())
+
+Try it out::
+
+    >>> log.error('404 error: GET /fibityfoo')
+
+And it works::
+
+    $ cat /var/log/rgl/404-errors.log
+    404 error: GET /fibityfoo
+
+Doing the filter + handler for just 500 errors will follow the same
+pattern.
+
+TODO: make a python code example that shows both.
+
+Beyond checking for magic strings
+---------------------------------
+
+Rather than passing in just a string to the log.error method, you can
+pass in anything that can be converted to a string::
+
+    >>> class Response404(object):
+    ...     def __init__(self, msg):
+    ...         self.msg = msg
+    ...     def __str__(self):
+    ...         return self.msg
+
+    >>> log.error(Response404('404 error: GET /fibityfoo-demo-type-check'))
+
+This frees you from checking for substrings in your filter.  You can use
+type-checking instead to get a more precise match::
+
+    >>> class Only404(logging.Filter):
+    ...     def filter(self, logrec):
+    ...         return isinstance(logrec.getMessage(), Response404)
+
+This works::
+
+    $ cat /var/log/rgl/404-errors.log
+    404 error: GET /fibityfoo-demo-type-check
 
 
-*   Use type-checking on the log objects in the filter, like::
+Combining handlers with filters
+-------------------------------
 
-        if isinstance(log, My404Exception):
-            return True
+It can be a nuisance to define a handler and a filter and then link
+them up.
 
-    Much better!  Now I just need to log stuff like this::
+If they are always going to be used together, define the filter, and
+then create a handler subclass that automatically uses that filter::
 
-        try:
-            handle(req)
-        except Exception as ex:
-            log.exception(ex)
+    class NotFoundHandler(logging.FileHandler):
+
+        """
+        Got this idea from this guy:
+        http://streamhacker.com/2010/04/08/python-logging-filters/
+        """
+
+        def __init__(self, *args, **kwargs):
+            logging.FileHandler.__init__(self, *args, **kwargs)
+            self.addFilter(Only404())
+
+Now if you're using a config file, just instantiate the NotFoundhandler
+class, and you're ready to go.
+
+You can't use filters with .ini-style configs
+---------------------------------------------
+
+The `combining handlers with filters` part above is helpful when you're
+using the .ini-style configurations, because there's no way to create
+filters.
+
+But you can use your custom handler::
+
+    [handler_notfound]
+    class=rgl.funwithfilters.NotFoundHandler
+    level=DEBUG
+    formatter=consolefmt
+    args=('/var/log/rgl/404-errors.log', 'a')
+
+
+
 
 .. vim: set syntax=rst :
