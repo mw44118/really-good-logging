@@ -17,8 +17,8 @@ Getting started
 Managing logs
 =============
 
-*   rotate-your-log-files.txt
-*   fun-with-syslog.txt
+*   topics/rotate-your-log-files.txt
+*   topics/fun-with-syslog.txt
 *   topics/shipping-in-process-vs-background.txt
 
 Collect your logs

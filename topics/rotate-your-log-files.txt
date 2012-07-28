@@ -1,0 +1,55 @@
+Rotate your logfiles
+====================
+
+In the multiple logging channels example, I showed the rotating file
+handler.
+
+I prefer the unix logrotate facility.  You write a config file and drop
+it in /etc/logrotate.d.  Here's an example config file::
+
+    $ cat logrotate-rgl
+    /var/log/rgl/*.log {
+
+        # Rotate the logs every day.
+        daily
+
+        # Don't freak out if no log files exist.
+        missingok
+
+        # After thirty (30) rotations, delete.  This means we usually delete
+        # anything that is at least a month old.
+        rotate 30
+
+        # Use gzip to compress the logs.
+        compress
+
+        # Don't compress until a file is two cycles old.  In other
+        # words, keep the .1 files in an uncompressed state.
+        delaycompress
+
+        # Don't compress an empty file, because that would be silly.
+        notifempty
+
+        # Create the new files with these permissions.
+        create 640 matt matt
+
+        # sharedscripts tells logrotate to only restart stuff once, not once
+        # for each file.
+        sharedscripts
+
+        # Now tell supervisord to restart all these scripts, so that they
+        # don't keep logging to the old files.
+        postrotate
+           supervisorctl restart all
+        endscript
+
+    }
+
+I like this one because I can define what to do when logrotate is
+finished.  In this case, I'm telling logrotate to use supervisord
+restart a bunch of my processes.
+
+I can also use this hook to copy logs across a network, or do whatever I
+want.
+
+.. vim: set syntax=rst:

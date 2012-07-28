@@ -1,0 +1,36 @@
+Fun with syslog
+===============
+
+Syslog is built into Unix.  It does a lot of what I want, but it really
+falls down when log messages are multiple lines in length.
+
+Here's the results of logging the traceback::
+
+    $ python rgl/syslogfun.py
+    2012-07-28 00:49:04,947 DEBUG      26231  syslogfun.py             46   This is a boring debug message.
+    2012-07-28 00:49:04,948 INFO       26231  syslogfun.py             47   Here is an info message...
+    2012-07-28 00:49:04,948 WARNING    26231  syslogfun.py             48   This is a warning message!
+    2012-07-28 00:49:04,948 ERROR      26231  syslogfun.py             49   Even worse, This is an error message!
+    2012-07-28 00:49:04,949 CRITICAL   26231  syslogfun.py             50   OH NO THIS IS CRITICAL
+    2012-07-28 00:49:04,949 ERROR      26231  syslogfun.py             56   integer division or modulo by zero
+    Traceback (most recent call last):
+      File "rgl/syslogfun.py", line 53, in <module>
+        i()
+      File "rgl/syslogfun.py", line 20, in i
+        1/0
+    ZeroDivisionError: integer division or modulo by zero
+
+Here's what the logged data in syslog looks like::
+
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,470 DEBUG      25899 syslogfun.py             41   This is a boring debug message.
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,470 INFO       25899 syslogfun.py             42   Here is an info message...
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,471 WARNING    25899 syslogfun.py             43   This is a warning message!
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,471 ERROR      25899 syslogfun.py             44   Even worse, This is an error message!
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,471 CRITICAL   25899 syslogfun.py             45   OH NO THIS IS CRITICAL
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,471 ERROR      25899 syslogfun.py             51   integer division or modulo by zero #012Traceback (most recent call last):#012  File "rgl/syslogfun.py", line 48, in <module>#012    i()#012  File "rgl/syslogfun.py", line
+    20, in i#012    1/0#012ZeroDivisionError: integer division or modulo
+    by zero
+
+
+
+.. vim: set syntax=rst:
