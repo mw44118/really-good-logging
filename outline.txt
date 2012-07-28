@@ -11,20 +11,15 @@ Getting started
 *   topics/configure-logging-with-config-file.txt
 *   topics/configure-logging-with-dictionary.txt
 *   topics/log-uncaught-exceptions-with-sys.excepthook.txt
-
-A little bit fancier
-====================
-
 *   topics/multiple-logging-channels.txt
 *   topics/example-log-filters.txt
-*   how-to-log-exceptions.txt
 
 Managing logs
 =============
 
 *   rotate-your-log-files.txt
 *   fun-with-syslog.txt
-*   topics/in-process-vs-background.txt
+*   topics/shipping-in-process-vs-background.txt
 
 Collect your logs
 =================
@@ -40,7 +35,5 @@ Last points
 ===========
 
 *   topics/privacy-and-security-issues.txt
-
-
 
 .. vim: set syntax=rst:

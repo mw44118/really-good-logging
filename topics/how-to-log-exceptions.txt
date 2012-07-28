@@ -1,0 +1,6 @@
+How to log exceptions
+=====================
+
+The program fun_with_exceptions.py shows how to inspect a traceback and
+get the values of data in the various frames.
+
