@@ -7,17 +7,15 @@ Getting started
 
 *   topics/basic-logging.txt
 *   topics/basic-handlers.txt
-
 *   topics/beyond-basic-logging.txt
-
 *   topics/configure-logging-with-config-file.txt
 *   topics/configure-logging-with-dictionary.txt
+*   topics/log-uncaught-exceptions-with-sys.excepthook.txt
 
 A little bit fancier
 ====================
 
-*   topics/log-uncaught-exceptions-with-sys.excepthook.txt
-*   multiple-logging-channels.txt
+*   topics/multiple-logging-channels.txt
 *   example-log-filters.txt
 *   how-to-log-exceptions.txt
 

@@ -1,0 +1,109 @@
+Multiple logging channels
+=========================
+
+Pretend you're writing a text-adventure game like `Zork`_.
+
+.. _`Zork`: https://en.wikipedia.org/wiki/Zork
+
+You have these parts of your code:
+
+*   parse player commands
+
+*   track the state of the game world, like how much gold the player has, what
+    the monsters are doing, etc
+
+*   talk to a central server and check for bug fixes
+
+And this is how you want your logs to work:
+
+*   The parsing logs go to /var/log/rgl/parser.log
+
+*   The game-state logs go to /var/log/rgl/gamestate.log
+
+*   The bug-fix checks go to /tmp/bugfix.log, and only keep track of the last
+    several entries.
+
+*   Everything except bug fixes show up on stderr
+
+This is one solution::
+
+    $ python rgl/multiple_logging_channels.py
+    2012-07-27 22:38:30,850 DEBUG      18126  multiple_logging_channels.py 108  player command: look
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 109  Retrieving room description...
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 111  player command: north
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 112  Updating player location
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 114  player command: west
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 115  Updating player location
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 117  player command: look
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 118  Retrieving room description...
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 120  player command: invntory
+    2012-07-27 22:38:30,852 ERROR      18126  multiple_logging_channels.py 121  Invalid command: 'invntory'
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 123  player command: inventory
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 124  Retrieving player inventory...
+
+Everything except the bugfix messages show up in stderr.
+
+Just the game-state logs are in this file::
+
+    $ cat /var/log/rgl/gamestate.log
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 109  Retrieving room description...
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 112  Updating player location
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 115  Updating player location
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 118  Retrieving room description...
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 124  Retrieving player inventory...
+
+And here's the last several bugfix logs::
+
+    $ cat /tmp/bugfix.log
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,868 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,868 DEBUG      18126  multiple_logging_channels.py 129  checking...
+
+
+Log propagation
+---------------
+
+This is how I kept bugfix logs out of stderr::
+
+    logger_for_bugfix_checker.propagate = False
+
+Every logger instance has a parent attribute.  The root logger's parent
+attribute is None.  By default, after logging a message, the logger sends the
+message up to its parent for the parent to log it as well.
+
+Setting propagate to False blocks this behavior.
+
+Logger instances are recycled
+-----------------------------
+
+logging.getLogger('foo') creates a new logger the first time, but after that,
+logging.getLogger returns a reference to that same one::
+
+    >>> bugfix_logger = logging.getLogger('bugfix')
+    >>> another_bugfix_logger = logging.getLogger('bugfix')
+    >>> bugfix_logger is another_bugfix_logger
+    True
+
+This means that in one module you can configure a logger, and then in any other
+module, you can get that same logger with all its configuration intact.
+
+RotatingFileHandler
+-------------------
+
+I used logging.handlers.RotatingFileHandler to cap the size of the bugfix
+log, like this::
+
+    bugfix_handler = logging.handlers.RotatingFileHandler(
+        '/tmp/bugfix.log',
+        maxBytes=800, backupCount=1)
+
+The backupCount=1 parameter tells the logger to keep the most recently rotated
+file in /tmp/bugfix.log.1.  Setting backupCount=2 would tell the logger to keep
+the most recently rotated files.
+
+.. vim: set syntax=rst:

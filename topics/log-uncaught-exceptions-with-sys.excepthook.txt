@@ -4,39 +4,120 @@ Log uncaught exceptions by setting sys.excepthook
 Uncaught exceptions will not be logged
 --------------------------------------
 
-This is a script that is going to blow up::
+This script will blow up::
 
-    $ python kaboom1.py
+    $ cat rgl/kaboom1.py
 
-The traceback does not show up in the output logs!
+    # vim: set expandtab ts=4 sw=4 filetype=python:
+
+    import logging
+
+    def f():
+        return g()
+
+    def g():
+        return h()
+
+    def h():
+        return i()
+
+    def i():
+        1/0
+
+    if __name__ == '__main__':
+
+        logging.basicConfig(
+            level=logging.DEBUG,
+            filename='/tmp/kaboom1.log',
+            filemode='w')
+
+        logging.debug('About to do f().')
+
+        f()
+
+Notice the helpful traceback::
+
+    $ python rgl/kaboom1.py
+    Traceback (most recent call last):
+      File "rgl/kaboom1.py", line 28, in <module>
+        f()
+      File "rgl/kaboom1.py", line 9, in f
+        return g()
+      File "rgl/kaboom1.py", line 13, in g
+        return h()
+      File "rgl/kaboom1.py", line 17, in h
+        return i()
+      File "rgl/kaboom1.py", line 21, in i
+        1/0
+    ZeroDivisionError: integer division or
+    modulo by zero
+
+But that traceback does not show up in the output logs!
 
 ::
 
     $ cat /tmp/kaboom1.log
+    DEBUG:root:About to do f().
 
 
 You could wrap your code with big try / except
 ----------------------------------------------
 
-I don't like this:
+This `diaper pattern` is a popular solution::
 
-*   easy to accidentally nest within another try/except.
+    try:
+        f()
 
-*   easy to forget to re-raise exception, so the script may return a
-    misleading error code
+    except Exception as ex:
+        logging.exception(ex)
+        raise
 
-You should use sys.excepthook
------------------------------
+.. _`diaper pattern`: http://mike.pirnat.com/2009/05/09/the-diaper-pattern-stinks/
 
-The kaboom2.py script does it right::
+Make sure you re-raise the exception, otherwise your program will end
+with a zero return code.
 
-    $ cat kaboom2.py
+Sidenote: when logging exceptions, make sure you either use the
+logging.exception method, or do something like this::
+
+        logging.error(ex, exc_info=1)
+        logging.critical(ex, exc_info=1)
+
+Without exc_info=1, yo won't see the traceback in your logs.  You'll
+just see the message from the exception.
 
 
+Or you could use sys.excepthook
+-------------------------------
 
+The kaboom2.py script has this extra code::
 
-Next show how to use sys.excepthook, like this:
-https://gist.github.com/2960239
+    def log_uncaught_exceptions(ex_cls, ex, tb):
 
+        logging.critical(''.join(traceback.format_tb(tb)))
+        logging.critical('{0}: {1}'.format(ex_cls, ex))
+
+    sys.excepthook = log_uncaught_exceptions
+
+And here's the results::
+
+    $ python rgl/kaboom2.py
+
+    $ cat /tmp/kaboom2.log
+    DEBUG:root:About to do f().
+    CRITICAL:root:  File "rgl/kaboom2.py", line 39, in <module>
+        f()
+      File "rgl/kaboom2.py", line 9, in f
+        return g()
+      File "rgl/kaboom2.py", line 13, in g
+        return h()
+      File "rgl/kaboom2.py", line 17, in h
+        return i()
+      File "rgl/kaboom2.py", line 21, in i
+        1/0
+
+    CRITICAL:root:<type 'exceptions.ZeroDivisionError'>: integer division or modulo by zero
+
+sys.excepthook preserves the non-zero return code.
 
 .. vim: set syntax=rst :

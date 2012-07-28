@@ -3,17 +3,42 @@ Configure logging with a dictionary
 
 You can also configure logging by passing a dictionary of values.
 
-There is a pretty clever trick possible with this approach: : now you
-can configure logging with any system that can be translated into a
-dictionary.
+There is a pretty clever trick possible with this approach: now you can
+configure logging with *any* markup language.
 
-Just write the code to translate those formats into this data structure,
-and you're good.
+Just write the code to translate those formats into this dictionary data
+structure, and you're good.
 
 I like YAML, so here's a YAML example::
 
     python rgl/yaml_example.py
 
-As of python 2.7, this approach is the recommended approach.
+One weird gotcha: the layout of the dictionary is not exactly what I
+thought it would be, based on the layout of the .ini-style
+configuration.
+
+Here's what the yaml looks like::
+
+    version: 1
+
+    root:
+        level: DEBUG
+        handlers: [console]
+
+    handlers:
+        console:
+            class: logging.StreamHandler
+            level: DEBUG
+            formatter: consolefmt
+
+    formatters:
+        consolefmt:
+            format: '%(asctime)s %(levelname)-10s %(process)-6d %(filename)-24s %(lineno)-4d %(message)s'
+
+Notice that "root" key at the top.  In the .ini-style, you make a
+loggers section, and configure the root logger inside there.
+
+Not with this new approach!
+
 
 .. vim: set syntax=rst:
