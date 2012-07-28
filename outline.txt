@@ -2,7 +2,7 @@
 Really Good Logging
 +++++++++++++++++++
 
-Getting started
+Finished topics
 ===============
 
 *   topics/basic-logging.txt
@@ -13,27 +13,21 @@ Getting started
 *   topics/log-uncaught-exceptions-with-sys.excepthook.txt
 *   topics/multiple-logging-channels.txt
 *   topics/example-log-filters.txt
-
-Managing logs
-=============
-
+*   topics/how-to-log-exceptions.txt
 *   topics/rotate-your-log-files.txt
 *   topics/fun-with-syslog.txt
 *   topics/shipping-in-process-vs-background.txt
+*   topics/privacy-and-security-issues.txt
 
-Collect your logs
-=================
+Not yet finished
+================
 
-*   mongodb.txt
-*   logstash.txt
-*   graylog.txt
-*   loggly.com.txt
-*   papertrailapp.com.txt
+*   topics/mongodb.txt
+*   topics/logstash.txt
+*   topics/graylog.txt
+*   topics/loggly.com.txt
+*   topics/papertrailapp.com.txt
 *   topics/sentry.txt
 
-Last points
-===========
-
-*   topics/privacy-and-security-issues.txt
 
 .. vim: set syntax=rst:

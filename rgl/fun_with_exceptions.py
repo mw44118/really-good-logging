@@ -32,10 +32,9 @@ if __name__ == '__main__':
 
     except Exception as ex:
         t, v, tb = sys.exc_info()
-        stack_point = tb
+        stack_point = tb.tb_next
 
         while stack_point:
-            logging
             logging.debug(stack_point.tb_frame.f_locals)
             stack_point = stack_point.tb_next
 

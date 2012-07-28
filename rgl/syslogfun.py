@@ -3,6 +3,9 @@
 import logging
 import logging.handlers
 
+def f():
+
+    return g()
 
 def g():
 
@@ -19,12 +22,12 @@ def i():
 if __name__ == '__main__':
 
     logging.root.setLevel(logging.DEBUG)
-    h = logging.handlers.SysLogHandler('/dev/log')
-    h.setLevel(logging.DEBUG)
+    sh = logging.handlers.SysLogHandler('/dev/log')
+    sh.setLevel(logging.DEBUG)
 
-    logging.root.addHandler(h)
+    logging.root.addHandler(sh)
 
-    f = logging.Formatter(
+    fmt = logging.Formatter(
         '%(asctime)s '
         '%(levelname)-10s '
         '%(process)-6d '
@@ -33,11 +36,11 @@ if __name__ == '__main__':
         '%(message)s '
     )
 
-    h.setFormatter(f)
+    sh.setFormatter(fmt)
 
     h2 = logging.StreamHandler()
     h2.setLevel(logging.DEBUG)
-    h2.setFormatter(f)
+    h2.setFormatter(fmt)
     logging.root.addHandler(h2)
 
     logging.debug('This is a boring debug message.')

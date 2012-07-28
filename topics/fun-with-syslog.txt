@@ -31,6 +31,6 @@ Here's what the logged data in syslog looks like::
     20, in i#012    1/0#012ZeroDivisionError: integer division or modulo
     by zero
 
-
+Not very pretty, but all the data is there.
 
 .. vim: set syntax=rst:
