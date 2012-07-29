@@ -1,0 +1,863 @@
+Basic Logging
+=============
+
+
+https://github.com/mw44118/really-good-logging
+
+
+Every log message you send must have a level.  These are the levels,
+sorted from lowest to highest level:
+
+*   DEBUG
+*   INFO
+*   WARNING (aka WARN)
+*   ERROR
+*   CRITICAL (aka FATAL)
+
+You can control where to send logs based on that level.
+
+The script rgl/fun_with_levels.py shows a simple example.  The script
+sends all these logging messages::
+
+    logging.debug('This is a boring debug message.')
+    logging.info('Here is an info message...')
+    logging.warn('This is a warning message!')
+    logging.error('Even worse, This is an error message!')
+    logging.critical('OH NO THIS IS CRITICAL')
+
+But you can hide different messages really easily.
+
+Here's what you see when you set the log level to CRITICAL::
+
+    $ python rgl/fun_with_levels.py CRITICAL
+    CRITICAL:root:OH NO THIS IS CRITICAL
+
+And at the opposite extreme, you can set the logging level to DEBUG::
+
+    $ python rgl/fun_with_levels.py DEBUG
+    DEBUG:root:This is a boring debug message.
+    INFO:root:Here is an info message...
+    WARNING:root:This is a warning message!
+    ERROR:root:Even worse, This is an error message!
+    CRITICAL:root:OH NO THIS IS CRITICAL
+    INFO:root:All done!
+
+Here's all you have to do::
+
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+    logging.debug('blargh')
+
+This stuff happens automatically behind the scenes:
+
+*   make a stream a stream handler to send messages to stderr
+
+*   python formats messages like this::
+        level:name:message
+
+
+Basic Handlers
+==============
+
+Handlers take a log message and put it somewhere.
+
+The default logging handler you get with logging.basicConfig is the
+StreamHandler, which sends stuff to stderr.
+
+You can use the filename argument to send logs to a file instead::
+
+    logging.basicConfig(level=logging.DEBUG, filename='/tmp/out.log'))
+
+Here's an example::
+
+    $ python rgl/fun_with_handlers.py
+
+    $ cat /tmp/out.log
+    INFO:root:All done!
+
+That log file is opened with append mode by default, so if you run the
+script many times, your logs will just accumulate::
+
+    $ python rgl/fun_with_handlers.py
+    $ python rgl/fun_with_handlers.py
+    $ python rgl/fun_with_handlers.py
+
+    $ cat /tmp/out.log
+    INFO:root:All done!
+    INFO:root:All done!
+    INFO:root:All done!
+    INFO:root:All done!
+
+You can set the mode to 'w' instead, and then each time you run your
+program, you will overwrite the logs from the last run.
+
+Later we'll talk about what to add to the log message so we can
+distinguish the different scripts.
+
+And we'll talk about how to rotate logs.
+
+Beyond basic logging
+====================
+
+Here's a nice logging setup:
+
+*   Write everything of DEBUG or greater to stderr and /tmp/rgl.log.
+
+*   Write everything with level INFO or greater to /var/log/rgl/rgl.log.
+
+*   Email critical log messages.
+
+*   Every log message has:
+
+    *   date and time
+    *   log level
+    *   process ID
+    *   line number of the log statement
+    *   file name containing the log statement
+
+*WHERE ARE YOUR PRINT STATEMENTS NOW?*
+
+This program shows how to set this up::
+
+    $ python rgl/beyond_basic_logging.py
+
+Here's the results::
+
+    $ cat /tmp/rgl.log
+    2012-07-25 22:17:38,981 DEBUG      10515  beyond_basic_logging.py
+    78 This is a boring debug message.
+
+
+    2012-07-25 22:17:38,982 INFO       10515  beyond_basic_logging.py  79 Here is an info message...
+    2012-07-25 22:17:38,982 WARNING    10515  beyond_basic_logging.py  80 This is a warning message!
+    2012-07-25 22:17:38,982 ERROR      10515  beyond_basic_logging.py  81 Even worse, This is an error message!
+    2012-07-25 22:17:38,983 CRITICAL   10515  beyond_basic_logging.py  82 OH NO THIS IS CRITICAL
+    2012-07-25 22:17:39,409 INFO       10515  beyond_basic_logging.py  84 All done!
+
+    $ cat /var/log/rgl/rgl.log
+    2012-07-25 22:17:38,982 INFO       10515  beyond_basic_logging.py  79 Here is an info message...
+    2012-07-25 22:17:38,982 WARNING    10515  beyond_basic_logging.py  80 This is a warning message!
+    2012-07-25 22:17:38,982 ERROR      10515  beyond_basic_logging.py  81 Even worse, This is an error message!
+    2012-07-25 22:17:38,983 CRITICAL   10515  beyond_basic_logging.py  82 OH NO THIS IS CRITICAL
+    2012-07-25 22:17:39,409 INFO       10515  beyond_basic_logging.py  84 All done!
+
+And I got the OH NO THIS IS CRITICAL message in my email also...
+
+
+Use a config file to set up logging
+===================================
+
+There are three ways that I know of to set up logging:
+
+*   code (that's what I showed in code/beyond_basic_logging.py)
+*   .ini-style config file (like what you use with ConfigParser)
+*   dictionary
+
+Here's an example using the .ini-style config::
+
+    $ python rgl/logging_config_example.py
+
+Loading a config file is stupid simple::
+
+    import logging.config
+    logging.config.fileConfig(path_to_config_file)
+
+Here's what it looks like to set up that SMTP handler with a config
+file::
+
+    [handler_smtp]
+    class=handlers.SMTPHandler
+    level=CRITICAL
+    formatter=consolefmt
+    args=('localhost', 'rgl@sprout.tplus1.com', ['matt@tplus1.com'], 'CRITICAL ERROR LOG MESSAGE')
+
+Pretty dang similar.
+
+
+Sidebar on pkg_resources
+------------------------
+
+Forget about logging for a second.  Any program that uses config files
+has to figure out where to put these files.
+
+When you're developing, you probably just hard-code the path to the
+config file in your program.
+
+But when you release this code and this config fiile as a package for
+other people to install and use, you won't know how and where the code
+is installed.
+
+These are popular solutions:
+
+*   Hard-code some path under /etc in your program and during the
+    install, copy the config file to that path.
+
+    *   This likely will require special permission.
+    *   What if many people people (or virtualenvs) share a box?
+    *   Uninstalling is not so easy now
+
+*   Require library users to tell you where to find the config file.
+
+    *   This is annoying to the end user.  When you import a python
+        module, you don't have to explicitly say where it lives; why
+        should you have to explicitly say where to find the config file
+        for the module?
+
+    *   With python eggs, this is not even possible, because eggs are
+        installed as zipped-up packages.
+
+Or you can use pkg_resources.
+
+It lets you store stuff like configuration files, text files, images,
+and lots of other stuff inside your code tree.
+
+And later, no matter where your code is installed, you can access these
+"resources".
+
+Of course, with this approach, the end user can not customize these
+configurations (just like they can't edit the code either) so if you
+mean for the end user to use the config file to alter how stuff works,
+then pkg_resources is not the right tool.
+
+Really simple example usage (from rgl/logging_config_example.py)::
+
+    path_to_config_file = pkg_resources.resource_filename(
+        'rgl.logging_configs',
+        'simple_example.cfg')
+
+The config file is stored in rgl/logging_configs.  Make sure you have an
+__init__.py file in rgl and in logging_configs.
+
+
+Configure logging with a dictionary
+===================================
+
+You can also configure logging by passing a dictionary of values.
+
+There is a pretty clever trick possible with this approach: now you can
+configure logging with *any* markup language.
+
+Just write the code to translate those formats into this dictionary data
+structure, and you're good.
+
+I like YAML, so here's a YAML example::
+
+    python rgl/yaml_example.py
+
+One weird gotcha: the layout of the dictionary is not exactly what I
+thought it would be, based on the layout of the .ini-style
+configuration.
+
+Here's what the yaml looks like::
+
+    version: 1
+
+    root:
+        level: DEBUG
+        handlers: [console]
+
+    handlers:
+        console:
+            class: logging.StreamHandler
+            level: DEBUG
+            formatter: consolefmt
+
+    formatters:
+        consolefmt:
+            format: '%(asctime)s %(levelname)-10s %(process)-6d %(filename)-24s %(lineno)-4d %(message)s'
+
+Notice that "root" key at the top.  In the .ini-style, you make a
+loggers section, and configure the root logger inside there.
+
+Not with this new approach!
+
+Also, you need that version key.
+
+
+Log uncaught exceptions by setting sys.excepthook
+=================================================
+
+Uncaught exceptions will not be logged
+--------------------------------------
+
+This script will blow up::
+
+    $ cat rgl/kaboom1.py
+
+    # vim: set expandtab ts=4 sw=4 filetype=python:
+
+    import logging
+
+    def f():
+        return g()
+
+    def g():
+        return h()
+
+    def h():
+        return i()
+
+    def i():
+        1/0
+
+    if __name__ == '__main__':
+
+        logging.basicConfig(
+            level=logging.DEBUG,
+            filename='/tmp/kaboom1.log',
+            filemode='w')
+
+        logging.debug('About to do f().')
+
+        f()
+
+Notice the helpful traceback::
+
+    $ python rgl/kaboom1.py
+    Traceback (most recent call last):
+      File "rgl/kaboom1.py", line 28, in <module>
+        f()
+      File "rgl/kaboom1.py", line 9, in f
+        return g()
+      File "rgl/kaboom1.py", line 13, in g
+        return h()
+      File "rgl/kaboom1.py", line 17, in h
+        return i()
+      File "rgl/kaboom1.py", line 21, in i
+        1/0
+    ZeroDivisionError: integer division or
+    modulo by zero
+
+But that traceback does not show up in the output logs!
+
+::
+
+    $ cat /tmp/kaboom1.log
+    DEBUG:root:About to do f().
+
+
+You could wrap your code with big try / except
+----------------------------------------------
+
+This `diaper pattern` is a popular solution::
+
+    try:
+        f()
+
+    except Exception as ex:
+        logging.exception(ex)
+        raise
+
+.. _`diaper pattern`: http://mike.pirnat.com/2009/05/09/the-diaper-pattern-stinks/
+
+Make sure you re-raise the exception, otherwise your program will end
+with a zero return code.
+
+Sidenote: when logging exceptions, make sure you either use the
+logging.exception method, or do something like this::
+
+        logging.error(ex, exc_info=1)
+        logging.critical(ex, exc_info=1)
+
+Without exc_info=1, yo won't see the traceback in your logs.  You'll
+just see the message from the exception.
+
+
+Or you could use sys.excepthook
+-------------------------------
+
+The kaboom2.py script has this extra code::
+
+    def log_uncaught_exceptions(ex_cls, ex, tb):
+
+        logging.critical(''.join(traceback.format_tb(tb)))
+        logging.critical('{0}: {1}'.format(ex_cls, ex))
+
+    sys.excepthook = log_uncaught_exceptions
+
+And here's the results::
+
+    $ python rgl/kaboom2.py
+
+    $ cat /tmp/kaboom2.log
+    DEBUG:root:About to do f().
+    CRITICAL:root:  File "rgl/kaboom2.py", line 39, in <module>
+        f()
+      File "rgl/kaboom2.py", line 9, in f
+        return g()
+      File "rgl/kaboom2.py", line 13, in g
+        return h()
+      File "rgl/kaboom2.py", line 17, in h
+        return i()
+      File "rgl/kaboom2.py", line 21, in i
+        1/0
+
+    CRITICAL:root:<type 'exceptions.ZeroDivisionError'>: integer division or modulo by zero
+
+sys.excepthook preserves the non-zero return code.
+
+Multiple logging channels
+=========================
+
+Pretend you're writing a text-adventure game like `Zork`_.
+
+.. _`Zork`: https://en.wikipedia.org/wiki/Zork
+
+You have these parts of your code:
+
+*   parse player commands
+
+*   track the state of the game world, like how much gold the player has, what
+    the monsters are doing, etc
+
+*   talk to a central server and check for bug fixes
+
+And this is how you want your logs to work:
+
+*   The parsing logs go to /var/log/rgl/parser.log
+
+*   The game-state logs go to /var/log/rgl/gamestate.log
+
+*   The bug-fix checks go to /tmp/bugfix.log,
+    and only keep track of the last
+    several entries.
+
+*   Everything except bug fixes show up on stderr
+
+This is one solution::
+
+    $ python rgl/multiple_logging_channels.py
+    2012-07-27 22:38:30,850 DEBUG      18126  multiple_logging_channels.py 108  player command: look
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 109  Retrieving room description...
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 111  player command: north
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 112  Updating player location
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 114  player command: west
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 115  Updating player location
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 117  player command: look
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 118  Retrieving room description...
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 120  player command: invntory
+    2012-07-27 22:38:30,852 ERROR      18126  multiple_logging_channels.py 121  Invalid command: 'invntory'
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 123  player command: inventory
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 124  Retrieving player inventory...
+
+Everything except the bugfix messages show up in stderr.
+
+Just the game-state logs are in this file::
+
+    $ cat /var/log/rgl/gamestate.log
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 109  Retrieving room description...
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 112  Updating player location
+    2012-07-27 22:38:30,851 DEBUG      18126  multiple_logging_channels.py 115  Updating player location
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 118  Retrieving room description...
+    2012-07-27 22:38:30,852 DEBUG      18126  multiple_logging_channels.py 124  Retrieving player inventory...
+
+And here's the last several bugfix logs::
+
+    $ cat /tmp/bugfix.log
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,867 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,868 DEBUG      18126  multiple_logging_channels.py 129  checking...
+    2012-07-27 22:38:30,868 DEBUG      18126  multiple_logging_channels.py 129  checking...
+
+
+Log propagation
+---------------
+
+This is how I kept bugfix logs out of stderr::
+
+    logger_for_bugfix_checker.propagate = False
+
+Every logger instance has a parent attribute.  The root logger's parent
+attribute is None.  By default, after logging a message, the logger sends the
+message up to its parent for the parent to log it as well.
+
+Setting propagate to False blocks this behavior.
+
+Logger instances are recycled
+-----------------------------
+
+logging.getLogger('foo') creates a new logger the first time, but after that,
+logging.getLogger returns a reference to that same one::
+
+    >>> bugfix_logger = logging.getLogger('bugfix')
+    >>> another_bugfix_logger = logging.getLogger('bugfix')
+    >>> bugfix_logger is another_bugfix_logger
+    True
+
+This means that in one module you can configure a logger, and then in any other
+module, you can get that same logger with all its configuration intact.
+
+RotatingFileHandler
+-------------------
+
+I used logging.handlers.RotatingFileHandler to cap the size of the bugfix
+log, like this::
+
+    bugfix_handler = logging.handlers.RotatingFileHandler(
+        '/tmp/bugfix.log',
+        maxBytes=800, backupCount=1)
+
+The backupCount=1 parameter tells the logger to keep the most recently rotated
+file in /tmp/bugfix.log.1.  Setting backupCount=2 would tell the logger to keep
+the most recently rotated files.
+
+.. vim: set syntax=rst:
+Fun with filters
+================
+
+Pretend you have a web application and you want to log 404 responses and
+500 responses as errors.
+
+And you want them to go to separate logging files.
+
+And you don't want to create different loggers.
+
+You just want to be able to do something like this::
+
+    >>> import logging
+    >>> log = logging.getLogger('webapp')
+    >>> log.error('404 error: GET /fibityfoo')
+    >>> log.error('500 error: GET /kablooey')
+
+And then you want the 404 error to go to /var/log/rgl/404-errors.log,
+while the 500 error goes to /var/log/rgl/500-errors.log.
+
+In this case, you can set up two handlers (one for each file) and each
+handler has a filter that blocks all messages but the ones that look
+right for this filter.
+
+Check for certain substrings in the message
+-------------------------------------------
+
+We can filter by saying that any log message that starts with "404"
+should go to the Only404 handler::
+
+    >>> import logging
+
+    >>> class Only404(logging.Filter):
+    ...     def filter(self, logrec):
+    ...         return logrec.getMessage().startswith('404')
+
+Next make the handler and add it to the logger::
+
+    >>> h404 = logging.FileHandler('/var/log/rgl/404-errors.log')
+    >>> h404.setLevel(logging.DEBUG)
+    >>> log.addHandler(h404)
+
+Now add the filter to the handler::
+
+    >>> h404.addFilter(Only404())
+
+Try it out::
+
+    >>> log.error('404 error: GET /fibityfoo')
+
+And it works::
+
+    $ cat /var/log/rgl/404-errors.log
+    404 error: GET /fibityfoo
+
+Doing the filter + handler for just 500 errors will follow the same
+pattern.
+
+TODO: make a python code example that shows both.
+
+Beyond checking for magic strings
+---------------------------------
+
+Rather than passing in just a string to the log.error method, you can
+pass in anything that can be converted to a string::
+
+    >>> class Response404(object):
+    ...     def __init__(self, msg):
+    ...         self.msg = msg
+    ...     def __str__(self):
+    ...         return self.msg
+
+    >>> log.error(Response404('404 error: GET /fibityfoo-demo-type-check'))
+
+This frees you from checking for substrings in your filter.  You can use
+type-checking instead to get a more precise match::
+
+    >>> class Only404(logging.Filter):
+    ...     def filter(self, logrec):
+    ...         return isinstance(logrec.getMessage(), Response404)
+
+This works::
+
+    $ cat /var/log/rgl/404-errors.log
+    404 error: GET /fibityfoo-demo-type-check
+
+
+Combining handlers with filters
+-------------------------------
+
+It can be a nuisance to define a handler and a filter and then link
+them up.
+
+If they are always going to be used together, define the filter, and
+then create a handler subclass that automatically uses that filter::
+
+    class NotFoundHandler(logging.FileHandler):
+
+        """
+        Got this idea from this guy:
+        http://streamhacker.com/2010/04/08/python-logging-filters/
+        """
+
+        def __init__(self, *args, **kwargs):
+            logging.FileHandler.__init__(self, *args, **kwargs)
+            self.addFilter(Only404())
+
+Now if you're using a config file, just instantiate the NotFoundhandler
+class, and you're ready to go.
+
+You can't use filters with .ini-style configs
+---------------------------------------------
+
+The `combining handlers with filters` part above is helpful when you're
+using the .ini-style configurations, because there's no way to create
+filters.
+
+But you can use your custom handler::
+
+    [handler_notfound]
+    class=rgl.funwithfilters.NotFoundHandler
+    level=DEBUG
+    formatter=consolefmt
+    args=('/var/log/rgl/404-errors.log', 'a')
+
+
+
+
+.. vim: set syntax=rst :
+How to log exceptions
+=====================
+
+Logging the exception tracks the code, but not the data.  You can walk
+through the frames to get the values for the various local values.
+
+The program rgl/fun_with_exceptions.py has a contrived example.  Each
+function has a local object x::
+
+    def f():
+        x = 'inside f'
+        return g()
+
+    def g():
+        x = 'inside g'
+        return h()
+
+    def h():
+        x = 'inside h'
+        return i()
+
+    def i():
+
+        x = 'inside i'
+        1/0
+
+Here's the output::
+
+    $ python rgl/fun_with_exceptions.py
+    DEBUG:root:{'x': 'inside f'}
+    DEBUG:root:{'x': 'inside g'}
+    DEBUG:root:{'x': 'inside h'}
+    DEBUG:root:{'x': 'inside i'}
+    DEBUG:root:all done
+
+Rotate your logfiles
+====================
+
+In the multiple logging channels example, I showed the rotating file
+handler.
+
+I prefer the unix logrotate facility.  You write a config file and drop
+it in /etc/logrotate.d.  Here's an example config file::
+
+    $ cat logrotate-rgl
+    /var/log/rgl/*.log {
+
+        # Rotate the logs every day.
+        daily
+
+        # Don't freak out if no log files exist.
+        missingok
+
+        # After thirty (30) rotations, delete.  This means we usually delete
+        # anything that is at least a month old.
+        rotate 30
+
+        # Use gzip to compress the logs.
+        compress
+
+        # Don't compress until a file is two cycles old.  In other
+        # words, keep the .1 files in an uncompressed state.
+        delaycompress
+
+        # Don't compress an empty file, because that would be silly.
+        notifempty
+
+        # Create the new files with these permissions.
+        create 640 matt matt
+
+        # sharedscripts tells logrotate to only restart stuff once, not once
+        # for each file.
+        sharedscripts
+
+        # Now tell supervisord to restart all these scripts, so that they
+        # don't keep logging to the old files.
+        postrotate
+           supervisorctl restart all
+        endscript
+
+    }
+
+I like this one because I can define what to do when logrotate is
+finished.  In this case, I'm telling logrotate to use supervisord
+restart a bunch of my processes.
+
+I can also use this hook to copy logs across a network, or do whatever I
+want.
+
+Fun with syslog
+===============
+
+Syslog is built into Unix.  It does a lot of what I want, but it really
+falls down when log messages are multiple lines in length.
+
+Here's the results of logging the traceback::
+
+    $ python rgl/syslogfun.py
+    2012-07-28 00:49:04,947 DEBUG      26231  syslogfun.py             46   This is a boring debug message.
+    2012-07-28 00:49:04,948 INFO       26231  syslogfun.py             47   Here is an info message...
+    2012-07-28 00:49:04,948 WARNING    26231  syslogfun.py             48   This is a warning message!
+    2012-07-28 00:49:04,948 ERROR      26231  syslogfun.py             49   Even worse, This is an error message!
+    2012-07-28 00:49:04,949 CRITICAL   26231  syslogfun.py             50   OH NO THIS IS CRITICAL
+    2012-07-28 00:49:04,949 ERROR      26231  syslogfun.py             56   integer division or modulo by zero
+    Traceback (most recent call last):
+      File "rgl/syslogfun.py", line 53, in <module>
+        i()
+      File "rgl/syslogfun.py", line 20, in i
+        1/0
+    ZeroDivisionError: integer division or modulo by zero
+
+Here's what the logged data in syslog looks like::
+
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,470 DEBUG      25899 syslogfun.py             41   This is a boring debug message.
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,470 INFO       25899 syslogfun.py             42   Here is an info message...
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,471 WARNING    25899 syslogfun.py             43   This is a warning message!
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,471 ERROR      25899 syslogfun.py             44   Even worse, This is an error message!
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,471 CRITICAL   25899 syslogfun.py             45   OH NO THIS IS CRITICAL
+    Jul 28 00:40:33 sprout 2012-07-28 00:40:33,471 ERROR      25899 syslogfun.py             51   integer division or modulo by zero #012Traceback (most recent call last):#012  File "rgl/syslogfun.py", line 48, in <module>#012    i()#012  File "rgl/syslogfun.py", line
+    20, in i#012    1/0#012ZeroDivisionError: integer division or modulo
+    by zero
+
+Not very pretty, but all the data is there.
+
+.. vim: set syntax=rst:
+Shipping Logs in process versus in background
+=============================================
+
+Scenario
+--------
+
+You have a box named that runs a process.  You want to get the logs from
+that box to your central logging box.
+
+You have two options:
+
+*   `Ship logs in process`
+*   `Use a different process to ship logs in background`
+
+Ship logs in process
+--------------------
+
+You can configure logging so the python process sends logs to the
+central box.
+
+You just need to add any handler that does this for you.  Here's some of
+the options in the standard library:
+
+*   logging.handlers.SysLogHandler
+*   logging.handlers.DatagramHandler (UDP)
+*   logging.handlers.SocketHandler (TCP)
+*   logging.handlers.HTTPHandler (do GETs or POSTs to some webserver)
+
+Other alternatives:
+
+*   send logs to mongo
+*   send to elastic search
+*   send to postgresql
+*   graylog2
+*   logstash
+
+Third party services:
+
+*   loggly.com
+*   papertrailapp.com
+
+Risks:
+
+*   If the remote service becomes slow or unavailable, your process may
+    become slow or crash.
+
+
+Use a different process to ship logs in background
+--------------------------------------------------
+
+Or you can Send logs to the local filesystem or to some other local
+process.  Then that other local process.
+
+This choice avoids the risk above, but has these risks instead:
+
+*   Now you need to configure and monitor your central process and
+    the log-shipping process.
+
+*   Logs may not arrive at your central logging system as quickly.
+
+Privacy and Security Issues
+===========================
+
+Be aware of what is in your logs
+--------------------------------
+
+Pretend you run a website that sells subscriptions, and you always log
+the body of all HTTP POST requests.
+
+Now your logs may be full of credit card numbers (if you are lucky
+enough to have customers).
+
+
+Be aware of where you send your logs
+------------------------------------
+
+Pretend that when your website crashes, you send an email to your
+development team with the traceback.
+
+Now you need to make sure that those emails don't get forwarded to the
+wrong people!
+
+This is exactly how the rebels in Star Wars got the plans to the death
+star, both times.  The same storm trooper forgot to sign out of his
+email at an internet cafe.
+
+
+Figure out your risk tolerance
+------------------------------
+
+There is no one-size-fits-all solution here.
+
+The logging policy that works well for a big hospital's electronic
+medical records application should look different than the logging
+policy used at some pre-money startup just building an app they plan to give
+away for free.
+
+You need to weigh security concerns vs the customer experience, time to
+market, and infrastructure costs.
+
+.. vim: set syntax=rst:
