@@ -1,0 +1,82 @@
++++++++++++++++++++
+Really good logging
++++++++++++++++++++
+
+Description
+===========
+
+Really good logging means when something goes wrong in the middle of the night,
+you know about it, and you have enough information to fix it even if the
+problem never repeats.
+
+At the same time, really good logging doesn't raise false alarms and doesn't
+require finding needles in a haystack.
+
+Logging is important, but we usually do it wrong. Let's stop doing that.
+
+configure-logging-with-config-file.txt
+configure-logging-with-dictionary.txt
+example-log-filters.txt
+logging-vs-print-statements.txt
+log-uncaught-exceptions-with-sys.excepthook.txt
+
+Abstract
+========
+
+I aim to talk about how to:
+
+*   get started with the python standard library logging module
+
+    *   use-basic-logging.txt
+
+*   use different handlers for different kinds of messages, so some messages go
+    to text files and others go to emails, and some others go to both places.
+
+    *   dispatch-by-log-level.txt
+
+*   Set up non-trivial logging systems with config files, code, or
+    dictionaries
+
+    *   configure-logging-with-code.txt
+
+*   record a stack trace with as much detail as you want (even if you want the
+    values of every object in every frame)
+
+    *   how-to-log-exceptions.txt
+
+*   send logs from different boxes to a central box
+
+    *   fun-with-syslog.txt
+    *   in-process-vs-background.txt
+
+*   security and privacy issues with logging
+
+    *   privacy-and-security-issues.txt
+
+
+*   rotate and archive old logs automatically.
+
+    *   rotate-your-log-files.txt
+
+*   do log analysis and search with more than ssh and grep
+
+
+
+
+*   use logstash, graylog2, loggly.com and any other packages and services I
+    find out about.
+
+I'd love to get input from people about what is important to them.
+Email me at matt@tplus1.com so I can make this talk useful!
+
+Audience level: Experienced
+
+Submitting speaker: W. Matthew Wilson
+
+Additional Notes
+================
+
+Novice people should show up. Learn how to log and your life will be much more
+meaningful.
+
+.. vim: set syntax=rst:
