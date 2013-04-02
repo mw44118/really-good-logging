@@ -1,0 +1,47 @@
+++++++++++++++++++++++++++++
+Subjects I still want to add
+++++++++++++++++++++++++++++
+
+Write a console formatter that uses bash pretty colors.
+
+----
+
+Talk about when to use
+
+    log = logging.getLogger(__name__)
+
+vs an explicit, hard-coded logger name.
+
+---
+
+Explore sentry.
+
+Show how to set up the raven client and the sentry server.  Then talk
+about what sentry is good at and what it ain't good at.
+
+----
+
+Look at splunk and any open-source alternatives.
+
+----
+
+Talk more about logging to syslog.  Is it better to log to a local
+syslog, and then configure that to ship the logs to a remote syslog?
+
+Describe how to do both.
+
+----
+
+Write an exception logging example that shows more detail.
+
+----
+
+Address the concern with emails accumulating too quickly.
+
+----
+
+Look at the riemann mentioned at the last clepy -- http://riemann.io/
+
+
+
+.. vim: set syntax=rst:
