@@ -29,5 +29,58 @@ Not yet finished
 *   topics/papertrailapp.com.txt
 *   topics/sentry.txt
 
+Ideas to write later
+====================
+
+*   What you can do with logging namespaces
+
+*   Troubleshooting guide
+
+    *   remove doubled log messages
+
+*   What's up with disable_existing_loggers? Call out this annoying
+    thing.
+
+*   What does incremental=True do?
+
+*    When to use log = logging.getLogger(__name__) vs explicit hardcoded
+     name
+
+*   Changing log levels in production
+
+    *   update config files / code and restart
+    *   use the logging listener stuff
+
+*   Colorize those logs for fun!
+
+
+Matt's opinions
+===============
+
+*   What goes in each log level
+
+*   Good set up for a web application
+
+*   Good cron set up
+
+*   Good background process set up
+
+*   What is logging NOT for
+
+    *   reports to be distributed to end users
+    *   performance data
+    *   monitoring and alerts
+
+    You might have to use what's in your log data in the short run, but
+    in the long run, you're way better off building stuff just dedicated
+    to these goals.
+
+    Use the csv module if people want CSV reports.
+
+    Use the profile module to figure out why your code is slow.
+
+    Use some external system (like nagios, for example) to monitor
+    your app.
+
 
 .. vim: set syntax=rst:
